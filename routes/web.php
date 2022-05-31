@@ -14,4 +14,4 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('laravel/','app.welcome')->name('laravel');
 Route::resource('/posts','PostController');
-Route::view('test','app.test');
+Route::get('/posts/{post}/confirm','PostController@confirmDelet')->name('posts.confirmDelet');

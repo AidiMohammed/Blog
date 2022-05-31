@@ -43,6 +43,8 @@ class PostController extends Controller
         Post::create($data);
 
         $request->session()->flash('status','The post has been created !!');
+        $request->session()->flash('notif','CREATE');
+        $request->session()->flash('icone','fa-solid fa-circle-plus');
 
         return Redirect()->route('posts.index');
     }
@@ -55,7 +57,7 @@ class PostController extends Controller
      */
     public function show($id)
     {
-        //
+        return view('posts.show',['post' => Post::FindOrFail($id)]);
     }
 
     /**
@@ -66,7 +68,7 @@ class PostController extends Controller
      */
     public function edit($id)
     {
-        //
+        return view('posts.edit',['post' => Post::FindOrFail($id)]);
     }
 
     /**
@@ -76,9 +78,19 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(StorePost $request, $id)
     {
-        //
+        $post = Post::FindOrFail($id);
+        $post->title = $request->input('title');
+        $post->content = $request->input('content');
+
+        $post->save();
+
+        $request->session()->flash('status','The post has been updated !!');
+        $request->session()->flash('notif','UPDATE');
+        $request->session()->flash('icone','fa-solid fa-pen-to-square');
+
+        return redirect()->route('posts.index');
     }
 
     /**
@@ -87,8 +99,15 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request,$id)
     {
-        //
+        $post = Post::FindOrFail($id);
+        $post->delete();
+
+        $request->session()->flash('status','The post has been deleted !!');
+        $request->session()->flash('notif','DELETE');
+        $request->session()->flash('icone','fa-solid fa-trash-can');
+
+        return redirect()->route('posts.index');
     }
 }

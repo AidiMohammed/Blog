@@ -5,6 +5,5 @@
     "/js/custom.js": "/js/custom.js",
     "/js/jquery.min.js": "/js/jquery.min.js",
     "/js/prism.js": "/js/prism.js",
-    "/css/theme.css": "/css/theme.css",
-    "/css/font-awesome.min.css": "/css/font-awesome.min.css"
+    "/css/theme.css": "/css/theme.css"
 }
