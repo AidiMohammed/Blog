@@ -2,21 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Post;
-use App\Http\Requests\StorePost;
+use App\Comment;
+use App\Http\Requests\StoreComment;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 
-class PostController extends Controller
+class CommentController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($post_id)
     {
-        return view('posts.index',['posts' => Post::withCount('comments')->get()]);
+        $post = post::FindOrFail($post_id);
+                
     }
 
     /**
@@ -24,9 +26,9 @@ class PostController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create($post_id)
     {
-        return view('posts.create');
+        return view('comments.create',['post' => $post_id]);
     }
 
     /**
@@ -35,18 +37,18 @@ class PostController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StorePost $request)
+    public function store(StoreComment $request,$post_id)
     {
-        $data = $request->only(['title','content']);
-        $data['active'] = false;
+        $post = Post::FindOrFail($post_id);
+        $comment = new Comment();
+        $comment->content = $request->input('content');
+        $comment->post()->associate($post)->save();
 
-        Post::create($data);
-
-        $request->session()->flash('status','The post has been created !!');
+        $request->session()->flash('status','The comment has been created !!');
         $request->session()->flash('notif','CREATE');
-        $request->session()->flash('icone','fa-solid fa-circle-plus');
+        $request->session()->flash('icone','fa-solid fa-comment-dots');
 
-        return Redirect()->route('posts.index');
+        return redirect()->route('posts.show',['post' => $post_id]);
     }
 
     /**
@@ -57,9 +59,7 @@ class PostController extends Controller
      */
     public function show($id)
     {
-        $post = Post::FindOrfail($id);
-        $comments = $post->comments()->get();
-        return view('posts.show',['post' => $post,'comments' => $comments]);
+        //
     }
 
     /**
@@ -69,8 +69,8 @@ class PostController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
-    {
-        return view('posts.edit',['post' => Post::FindOrFail($id)]);
+    { 
+        return view('comments.edit',['comment' => Comment::FindOrFail($id)]);
     }
 
     /**
@@ -80,19 +80,17 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(StorePost $request, $id)
+    public function update(StoreComment $request, $id)
     {
-        $post = Post::FindOrFail($id);
-        $post->title = $request->input('title');
-        $post->content = $request->input('content');
+        $comment = Comment::FindOrFail($id);
+        $comment->content = $request->input('content');
+        $comment->save();
 
-        $post->save();
-
-        $request->session()->flash('status','The post has been updated !!');
+        $request->session()->flash('status','The comment has been updated !!');
         $request->session()->flash('notif','UPDATE');
         $request->session()->flash('icone','fa-solid fa-pen-to-square');
 
-        return redirect()->route('posts.show',['post' => $post->id]);
+        return redirect()->route('posts.show',['post' => $comment->post_id]);
     }
 
     /**
@@ -103,13 +101,14 @@ class PostController extends Controller
      */
     public function destroy(Request $request,$id)
     {
-        $post = Post::FindOrFail($id);
-        $post->delete();
+        $comment = Comment::FindOrFail($id);
+        $post_id = $comment->post_id;
+        $comment->delete();
 
-        $request->session()->flash('status','The post has been deleted !!');
+        $request->session()->flash('status','The comment has been delted !!');
         $request->session()->flash('notif','DELETE');
         $request->session()->flash('icone','fa-solid fa-trash-can');
 
-        return redirect()->route('posts.index');
+        return redirect()->route('posts.show',['post' => $post_id]);
     }
 }

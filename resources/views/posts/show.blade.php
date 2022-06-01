@@ -10,43 +10,58 @@
             <em class="m-2">{{$post->created_at->diffForHumans()}}</em>
         </div>
         <div class="card-body">
-            {{$post->content}}
+                {{$post->content}}
         </div>
         <div class="card-footer">
             <div class="d-flex justify-content-between">
-                <a class="btn btn-outline-info" href=""><i class="fa-solid fa-comment-dots"></i> Comment</a>
+                <a class="btn btn-outline-info" href="{{route('comments.create',['post' => $post->id])}}"><i class="fa-solid fa-comment-dots"></i> Comment</a>
                 <div>
                     <a class="btn btn-warning me-md-2"  href="{{route('posts.edit',['post' => $post->id])}}"><i class="fa-solid fa-pen-to-square"> </i> EDIT</a>
-                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="fa-solid fa-trash-can"></i> DELETE</button>
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDaletPost"><i class="fa-solid fa-trash-can"></i> DELETE</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Are you sure ?</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="text-center">
-                        <i style="color: rgb(221, 30, 30)" class="fa-solid fa-exclamation fa-10x mb-4"></i>
-                        <h5>Do you want to delete <strong style="color: rgb(221,30,30)">" {{$post->title}} "</strong>  ?</h5>
+    <!-- list Comments -->
+    <div class="card text-center mt-2">
+        <h2>List comments</h2>
+    </div>
+    <div class="row">
+        @forelse ($comments as $comment)
+            <div class="col-sm-6">
+                <div class="card mt-2">
+                    <div class="d-flex justify-content-between">
+                        <div class="m-2">Admin</div>
+                        <em class="m-2">{{$post->created_at->diffForHumans()}}</em>
+                    </div>
+                    <div class="card-body">
+                        {{$comment->content}}
+                    </div>
+                    <div class="card-footer">
+                        <div class="text-end">
+                            <a href="{{route('comments.edit',['comment' => $comment->id])}}" class="btn btn-warning me-md-2"><i class="fa-solid fa-pen-to-square"></i> EDIT</a>
+                            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDaletComment"><i class="fa-solid fa-trash-can"></i> DELETE</button>
+                        </div>
                     </div>
                 </div>
-                <div class="modal-footer text-center">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">CANCEL</button>
-                    <form method="POST" action="{{route('posts.destroy',['post' => $post->id])}}">
-                        @csrf
-                        @method('DELETE')
-                        <button class="btn btn-danger" type="submit">DELTETE</button>
-                    </form>
-                </div>
             </div>
-        </div>
+        @empty
+            <div class="text-center mt-4">
+                <h2>
+                    <span class="badge rounded-pill bg-primary">
+                        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Info:"><use xlink:href="#exclamation-triangle-fill"/></svg> No Comment
+                    </span>
+                </h2>
+            </div>
+        @endforelse
     </div>
+
+    
+    @include('posts.modalConfirmDelet')
+    @if ($post->comments_count > 0)        
+        @include('comments.modalConfirmDelet')
+    @endif
+    
 
 @endsection
