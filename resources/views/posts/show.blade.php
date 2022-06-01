@@ -46,6 +46,7 @@
                     </div>
                 </div>
             </div>
+            @include('comments.modalConfirmDelet')
         @empty
             <div class="text-center mt-4">
                 <h2>
@@ -55,13 +56,6 @@
                 </h2>
             </div>
         @endforelse
-    </div>
-
-    
-    @include('posts.modalConfirmDelet')
-    @if ($post->comments_count > 0)        
-        @include('comments.modalConfirmDelet')
-    @endif
-    
-
+    </div>    
+    @include('posts.modalConfirmDelet') 
 @endsection
