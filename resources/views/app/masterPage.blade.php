@@ -14,7 +14,7 @@
     @include('app.svg')
 
     @if (session()->has('status'))
-    <div class="toast-container position-absolute top-0 end-0 p-3" style="z-index: 999">
+    <div class="toast-container position-absolute top-0 end-0 p-3 position-fixed" style="z-index: 999">
         <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="toast-header alert alert-success ">
                 <strong class="me-auto"><i class="{{session()->get('icone')}}"></i> {{session()->get('notif')}}</strong>
